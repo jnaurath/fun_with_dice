@@ -47,6 +47,7 @@ class BottomButton extends StatelessWidget {
                   child: Icon(
                     FontAwesomeIcons.dice,
                     size: 30.0,
+                    color: colorPalette2,
                   ),
                 ),
               ),

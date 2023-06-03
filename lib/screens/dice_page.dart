@@ -37,38 +37,37 @@ class _DicePageState extends State<DicePage> {
   static const Map categories = {
     "3s": Icon(
       FontAwesomeIcons.diceThree,
-      // color: Colors.green,
+      color: colorPalette5,
       size: 30.0,
     ),
     "4s": Icon(
       FontAwesomeIcons.diceFour,
-      // color: Colors.green,
+      color: colorPalette5,
       size: 30.0,
     ),
     "smallStreet": Icon(
       FontAwesomeIcons.road,
-      // color: Colors.green,
+      color: colorPalette5,
       size: 30.0,
-      color: unlockedDiceColor,
     ),
     "largeStreet": Icon(
       FontAwesomeIcons.road,
-      // color: Colors.green,
+      color: colorPalette5,
       size: 30.0,
     ),
     "FullHouse": Icon(
       FontAwesomeIcons.houseUser,
-      // color: Colors.green,
+      color: colorPalette5,
       size: 30.0,
     ),
     "Kniffel": Icon(
       FontAwesomeIcons.crown,
-      // color: Colors.green,
+      color: colorPalette5,
       size: 30.0,
     ),
     "Chance": Icon(
       FontAwesomeIcons.clover,
-      // color: Colors.green,
+      color: colorPalette5,
       size: 30.0,
     ),
   };
@@ -134,17 +133,34 @@ class _DicePageState extends State<DicePage> {
   Color setColor(String buttonCategory) {
     if (buttonCategory == this.selectedCategory) {
       // previous selected
-      return kCompletedCardColor;
+      return colorPalette1;
     } else if (buttonCategory == this.category) {
       // selected
-      return kActiveCardColor;
+      return colorPalette4;
     } else if (kniffel.checkAlreadyCompleted(buttonCategory) ||
         buttonCategory == this.selectedCategory) {
       // completed
-      return kCompletedCardColor;
+      return colorPalette1;
     } else {
       // not selected
-      return kInactiveCardColor;
+      return colorPalette3;
+    }
+  }
+
+  Color setColorNumbers(String buttonCategory) {
+    if (buttonCategory == this.selectedCategory) {
+      // previous selected
+      return colorPalette1;
+    } else if (buttonCategory == this.category) {
+      // selected
+      return colorPalette5;
+    } else if (kniffel.checkAlreadyCompleted(buttonCategory) ||
+        buttonCategory == this.selectedCategory) {
+      // completed
+      return colorPalette2;
+    } else {
+      // not selected
+      return colorPalette4;
     }
   }
 
@@ -154,6 +170,7 @@ class _DicePageState extends State<DicePage> {
       Scaffold(
         appBar: AppBar(
           title: Text('Kniffel'),
+          backgroundColor: colorPalette4,
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -164,7 +181,7 @@ class _DicePageState extends State<DicePage> {
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Expanded(
                   child: ReusableCard(
-                    color: kInactiveCardColor,
+                    color: colorPalette3,
                     cardChild: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -173,11 +190,11 @@ class _DicePageState extends State<DicePage> {
                           children: <Widget>[
                             Text(
                               'Sum',
-                              style: kLabelTextStyle,
+                              style: labelTextStyle,
                             ),
                             Text(
                               kniffel.sum.toString(),
-                              style: kNumberTextStyle,
+                              style: numberTextStyle,
                             ),
                           ],
                         ),
@@ -187,7 +204,7 @@ class _DicePageState extends State<DicePage> {
                 ),
                 Expanded(
                   child: ReusableCard(
-                    color: kInactiveCardColor,
+                    color: colorPalette3,
                     cardChild: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -196,7 +213,7 @@ class _DicePageState extends State<DicePage> {
                           children: <Widget>[
                             Text(
                               'Bonus',
-                              style: kLabelTextStyle,
+                              style: labelTextStyle,
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -205,7 +222,7 @@ class _DicePageState extends State<DicePage> {
                               children: <Widget>[
                                 Text(
                                   kniffel.bonus.toString(),
-                                  style: kNumberTextStyle,
+                                  style: numberTextStyle,
                                 ),
                                 Text(
                                   kniffel.bonusDiff.toString(),
@@ -274,10 +291,15 @@ class _DicePageState extends State<DicePage> {
                       cardChild: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          Text(
-                            (diceIndex + 1).toString(),
-                            style: kNumberTextStyle,
-                          ),
+                          Text((diceIndex + 1).toString(),
+                              style: TextStyle(
+                                fontSize: 24.0,
+                                fontWeight: FontWeight.bold,
+                                color: colorPalette5,
+                              )
+                              // color: setColorNumbers(
+                              //     (diceIndex + 1).toString())),
+                              ),
                           Text(
                             !kniffel.checkAlreadyCompleted(
                                     (diceIndex + 1).toString())
@@ -287,7 +309,7 @@ class _DicePageState extends State<DicePage> {
                                 : kniffel
                                     .getResult((diceIndex + 1).toString())
                                     .toString(),
-                            style: kLabelTextStyle,
+                            style: labelTextStyle,
                           ),
                         ],
                       ),
@@ -325,18 +347,23 @@ class _DicePageState extends State<DicePage> {
                         children: <Widget>[
                           categories.values.elementAt(categoriesIndex),
                           Text(
-                            !kniffel.checkAlreadyCompleted(
-                                    categories.keys.elementAt(categoriesIndex))
-                                ? kniffel
-                                    .calculateResult(categories.keys
-                                        .elementAt(categoriesIndex))
-                                    .toString()
-                                : kniffel
-                                    .getResult(categories.keys
-                                        .elementAt(categoriesIndex))
-                                    .toString(),
-                            style: kLabelTextStyle,
-                          ),
+                              !kniffel.checkAlreadyCompleted(categories.keys
+                                      .elementAt(categoriesIndex))
+                                  ? kniffel
+                                      .calculateResult(categories.keys
+                                          .elementAt(categoriesIndex))
+                                      .toString()
+                                  : kniffel
+                                      .getResult(categories.keys
+                                          .elementAt(categoriesIndex))
+                                      .toString(),
+                              style: TextStyle(
+                                fontSize: 24.0,
+                                fontWeight: FontWeight.bold,
+                                color: colorPalette5,
+                              ) // color: setColorNumbers(categories.keys
+                              //     .elementAt(categoriesIndex))),
+                              ),
                         ],
                       ),
                     ),
