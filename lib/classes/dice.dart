@@ -2,15 +2,12 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 
 class Dice {
-  Dice(String name) {
-    this.name = name;
-    print("Dice constructed + " + name);
+  Dice() {
     dice();
   }
 
   int value = 1;
   bool locked = false;
-  String name;
 
   dice() {
     if (!this.locked) {
@@ -18,23 +15,20 @@ class Dice {
     }
   }
 
-  getValue() {
+  String getValue() {
     return this.value.toString();
   }
 
   changeDiceState() {
+    print("function changeDiceState");
     this.locked = !this.locked;
   }
 
-  setDiceState(value) {
+  setDiceState(bool value) {
     this.locked = value;
   }
 
-  getDiceState() {
+  bool getDiceState() {
     return this.locked;
-  }
-
-  getName() {
-    return this.name;
   }
 }

@@ -9,11 +9,6 @@ import 'package:fun_with_dice/screens/results_page.dart';
 import 'package:fun_with_dice/components/bottom_button.dart';
 import 'package:fun_with_dice/components/round_icon_button.dart';
 
-enum Gender {
-  male,
-  female,
-}
-
 class DicePage extends StatefulWidget {
   @override
   _DicePageState createState() => _DicePageState();
@@ -21,93 +16,79 @@ class DicePage extends StatefulWidget {
 
 class _DicePageState extends State<DicePage> {
   Kniffel kniffel = new Kniffel();
-  List<Dice> dices = [
-    new Dice("no.1"),
-    new Dice("no.2"),
-    new Dice("no.3"),
-    new Dice("no.4"),
-    new Dice("no.5"),
-  ];
 
-  static const List<String> categories = [
-    "3s",
-    "4s",
-    "smallStreet",
-    "largeStreet",
-    "FullHouse",
-    "Kniffel",
-    "Chance"
-  ];
+  static const Map categories = {
+    "3s": FontAwesomeIcons.diceThree,
+    "4s": FontAwesomeIcons.diceFour,
+    "smallStreet": FontAwesomeIcons.ellipsisV,
+    "largeStreet": FontAwesomeIcons.road,
+    "FullHouse": FontAwesomeIcons.houseUser,
+    "Kniffel": FontAwesomeIcons.crown,
+    "Chance": FontAwesomeIcons.questionCircle
+  };
 
   String category = "";
-  int value = 0;
-  bool allDicesLocked = false;
 
   void dice() {
     setState(() {
       // int index = 0;
-      if (rounds > 0) {
-        for (var dice in dices) {
-          // String before = dice.getValue();
-          dice.dice();
-          // print("dice (" +
-          //     index.toString() +
-          //     " / " +
-          //     dice.getName() +
-          //     ")! " +
-          //     before +
-          //     " --> " +
-          //     dice.getValue());
-          // index++;
-        }
-        rounds--;
-      } else {
-        print("end of rounds");
-        kniffel.calculateResult(category, value, dices);
-        if (kniffel.gameFinished()) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ResultsPage()),
-          );
-        } else {
-          rounds = 2;
-          for (var dice in dices) {
-            dice.setDiceState(false);
-            dice.dice();
-          }
-          category = "";
-          value = 0;
-        }
-      }
+      // if (rounds > 0) {
+      //   for (var dice in kniffe.dices) {
+      //     // String before = dice.getValue();
+      //     dice.dice();
+      //     // print("dice (" +
+      //     //     index.toString() +
+      //     //     " / " +
+      //     //     dice.getName() +
+      //     //     ")! " +
+      //     //     before +
+      //     //     " --> " +
+      //     //     dice.getValue());
+      //     // index++;
+      //   }
+      //   rounds--;
+      // } else {
+      //   print("end of rounds");
+      //   kniffel.calculateResult(category, value, dices);
+      //   if (kniffel.gameFinished()) {
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(builder: (context) => ResultsPage()),
+      //     );
+      //   } else {
+      //     rounds = 2;
+      //     for (var dice in dices) {
+      //       dice.setDiceState(false);
+      //       dice.dice();
+      //     }
+      //     category = "";
+      //     value = 0;
+      //   }
+      // }
 
-      print("Rounds left: " + (rounds).toString());
+      // print("Rounds left: " + (rounds).toString());
     });
   }
 
   void lockDice(index) {
     setState(() {
-      dices[index].changeDiceState();
-      allDicesLocked = checkAllDicesLocked();
-      print("allDicesLocked" + allDicesLocked.toString());
+      kniffel.dices[index].changeDiceState();
+      kniffel.allDicesLocked = kniffel.checkAllDicesLocked();
     });
   }
 
-  bool checkAllDicesLocked() {
-    print("function checkAllDicesLocked");
-    for (var dice in dices) {
-      if (!dice.getDiceState()) {
-        return false;
-      }
-    }
-    return true;
+  void kniffelNextRound(bool forceNextRound) {
+    setState(() {
+      kniffel.nextRound(this.category, forceNextRound);
+      this.category = "";
+    });
   }
 
-  Color setColor(String buttonCategory, int buttonValue) {
-    if (buttonCategory == this.category &&
-        (buttonValue == 0 || buttonValue == this.value)) {
+  Color setColor(String buttonCategory) {
+    if (buttonCategory == this.category) {
       // selected
       return kActiveCardColor;
-    } else if (kniffel.checkAlreadyCompleted(buttonCategory, buttonValue)) {
+    } else if (kniffel.checkAlreadyCompleted(buttonCategory)) {
       // completed
       return kCompletedCardColor;
     } else {
@@ -115,13 +96,6 @@ class _DicePageState extends State<DicePage> {
       return kInactiveCardColor;
     }
   }
-
-  int rounds = 2;
-
-  Gender selectedGender;
-  int height = 180;
-  int weight = 60;
-  int age = 20;
 
   @override
   Widget build(BuildContext context) {
@@ -133,98 +107,94 @@ class _DicePageState extends State<DicePage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Expanded(
-              child: Row(
-            children: <Widget>[
+            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Expanded(
                 child: ReusableCard(
-                  // onPress: () {
-                  //   setState(() {
-                  //     selectedGender = Gender.male;
-                  //   });
-                  // },
-                  color: true ? kActiveCardColor : kInactiveCardColor,
+                  color: kInactiveCardColor,
                   cardChild: Row(
-                    children: List.generate(5, (index) {
-                      return Expanded(
-                        child: TextButton(
-                          child: Image.asset(
-                            'images/dice' + dices[index].getValue() + '.png',
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            'Sum',
+                            style: kLabelTextStyle,
                           ),
-                          onPressed: () {
-                            lockDice(index);
-                          },
-                        ),
-                      );
-                    }),
-
-                    //     children: List.generate(5, (index) {
-                    //       return Expanded(
-                    //         child: ElevatedButton(
-                    //           child: Image.asset(
-                    //             'images/dice' + dices[index].getValue() + '.png',
-                    //           ),
-                    //           onPressed: () {
-                    //             lockDice(index);
-                    //           },
-                    //         ),
-
-                    // ),},),
+                          Text(
+                            kniffel.sum.toString(),
+                            style: kNumberTextStyle,
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ],
-          )),
-          // Expanded(
-          //   child: ReusableCard(
-          //     color: kActiveCardColor,
-          //     cardChild: Column(
-          //       mainAxisAlignment: MainAxisAlignment.center,
-          //       children: <Widget>[
-          //         Text(
-          //           'HEIGHT',
-          //           style: kLabelTextStyle,
-          //         ),
-          //         Row(
-          //           mainAxisAlignment: MainAxisAlignment.center,
-          //           crossAxisAlignment: CrossAxisAlignment.baseline,
-          //           textBaseline: TextBaseline.alphabetic,
-          //           children: <Widget>[
-          //             Text(
-          //               height.toString(),
-          //               style: kNumberTextStyle,
-          //             ),
-          //             Text(
-          //               'cm',
-          //               style: kLabelTextStyle,
-          //             )
-          //           ],
-          //         ),
-          //         SliderTheme(
-          //           data: SliderTheme.of(context).copyWith(
-          //             inactiveTrackColor: Color(0xFF8D8E98),
-          //             activeTrackColor: Colors.white,
-          //             thumbColor: Color(0xFFEB1555),
-          //             overlayColor: Color(0x29EB1555),
-          //             thumbShape:
-          //                 RoundSliderThumbShape(enabledThumbRadius: 15.0),
-          //             overlayShape:
-          //                 RoundSliderOverlayShape(overlayRadius: 30.0),
-          //           ),
-          //           child: Slider(
-          //             value: height.toDouble(),
-          //             min: 120.0,
-          //             max: 220.0,
-          //             onChanged: (double newValue) {
-          //               setState(() {
-          //                 height = newValue.round();
-          //               });
-          //             },
-          //           ),
-          //         ),
-          //       ],
-          //     ),
-          //   ),
-          // ),
+              Expanded(
+                child: ReusableCard(
+                  color: kInactiveCardColor,
+                  cardChild: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            'Bonus',
+                            style: kLabelTextStyle,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.baseline,
+                            textBaseline: TextBaseline.alphabetic,
+                            children: <Widget>[
+                              Text(
+                                kniffel.bonus.toString(),
+                                style: kNumberTextStyle,
+                              ),
+                              Text(
+                                kniffel.bonusDiff.toString(),
+                                style: kniffel.bonusDiff >= 0
+                                    ? kLabelBonusPositiveTextStyle
+                                    : kLabelBonusNegativeTextStyle,
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ]),
+          ),
+          Expanded(
+            child: Row(
+              children: List.generate(5, (index) {
+                return Expanded(
+                  child: ReusableCard(
+                    onPress: () {},
+                    cardChild: TextButton(
+                      style: TextButton.styleFrom(padding: EdgeInsets.all(5.0)),
+                      child: Image.asset(
+                        'images/dice' +
+                            kniffel.dices[index].getValue() +
+                            '.png',
+                        color: kniffel.dices[index].getDiceState()
+                            ? lockedDiceColor
+                            : unlockedDiceColor,
+                      ),
+                      onPressed: () {
+                        lockDice(index);
+                      },
+                    ),
+                  ),
+                );
+              }),
+            ),
+          ),
+          // Numbers
           Expanded(
             child: Row(
               children: List.generate(6, (diceIndex) {
@@ -232,15 +202,17 @@ class _DicePageState extends State<DicePage> {
                   child: ReusableCard(
                     onPress: () {
                       setState(() {
-                        if (!kniffel.alreadyCompleted(
-                            "number", diceIndex + 1)) {
-                          category = "number";
-                          value = diceIndex + 1;
-                          print(category + ", " + value.toString());
+                        if (!kniffel.checkAlreadyCompleted(
+                            (diceIndex + 1).toString())) {
+                          if (category == (diceIndex + 1).toString()) {
+                            print("forceNextRound");
+                            kniffelNextRound(true);
+                          }
+                          category = (diceIndex + 1).toString();
                         }
                       });
                     },
-                    color: setColor("number", diceIndex + 1),
+                    color: setColor((diceIndex + 1).toString()),
                     cardChild: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
@@ -249,7 +221,9 @@ class _DicePageState extends State<DicePage> {
                           style: kNumberTextStyle,
                         ),
                         Text(
-                          "todo",
+                          kniffel
+                              .calculateResult((diceIndex + 1).toString())
+                              .toString(),
                           style: kLabelTextStyle,
                         ),
                       ],
@@ -259,6 +233,7 @@ class _DicePageState extends State<DicePage> {
               }),
             ),
           ),
+          // specials
           Expanded(
             child: Row(
               children: List.generate(categories.length, (categoriesIndex) {
@@ -266,24 +241,31 @@ class _DicePageState extends State<DicePage> {
                   child: ReusableCard(
                     onPress: () {
                       setState(() {
-                        if (!kniffel.alreadyCompleted(
-                            categories[categoriesIndex], 0)) {
-                          category = categories[categoriesIndex];
-                          value = 0;
-                          print(category + ", " + value.toString());
+                        if (!kniffel.checkAlreadyCompleted(
+                            categories.keys.elementAt(categoriesIndex))) {
+                          if (category ==
+                              categories.keys.elementAt(categoriesIndex)) {
+                            print("forceNextRound");
+                            kniffelNextRound(true);
+                          }
+                          category = categories.keys.elementAt(categoriesIndex);
                         }
                       });
                     },
-                    color: setColor(categories[categoriesIndex], 0),
+                    color: setColor(categories.keys.elementAt(categoriesIndex)),
                     cardChild: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Text(
-                          categories[categoriesIndex],
-                          style: kLabelTextStyle,
+                        Icon(
+                          categories.values.elementAt(categoriesIndex),
+                          // color: Colors.green,
+                          size: 30.0,
                         ),
                         Text(
-                          "todo",
+                          kniffel
+                              .calculateResult(
+                                  categories.keys.elementAt(categoriesIndex))
+                              .toString(),
                           style: kLabelTextStyle,
                         ),
                       ],
@@ -294,9 +276,11 @@ class _DicePageState extends State<DicePage> {
             ),
           ),
           BottomButton(
-            buttonTitle: (rounds == 0 || allDicesLocked) ? "Done" : "Dice",
+            buttonTitle: (kniffel.rounds == 0 || kniffel.allDicesLocked)
+                ? "Done"
+                : "Dice (" + kniffel.rounds.toString() + ")",
             onTap: () {
-              dice();
+              kniffelNextRound(false);
             },
           ),
         ],
