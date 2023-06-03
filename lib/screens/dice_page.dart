@@ -35,13 +35,42 @@ class _DicePageState extends State<DicePage> {
   Kniffel kniffel = new Kniffel();
 
   static const Map categories = {
-    "3s": FontAwesomeIcons.diceThree,
-    "4s": FontAwesomeIcons.diceFour,
-    "smallStreet": FontAwesomeIcons.ellipsisV,
-    "largeStreet": FontAwesomeIcons.road,
-    "FullHouse": FontAwesomeIcons.houseUser,
-    "Kniffel": FontAwesomeIcons.crown,
-    "Chance": FontAwesomeIcons.questionCircle
+    "3s": Icon(
+      FontAwesomeIcons.diceThree,
+      // color: Colors.green,
+      size: 30.0,
+    ),
+    "4s": Icon(
+      FontAwesomeIcons.diceFour,
+      // color: Colors.green,
+      size: 30.0,
+    ),
+    "smallStreet": Icon(
+      FontAwesomeIcons.road,
+      // color: Colors.green,
+      size: 30.0,
+      color: unlockedDiceColor,
+    ),
+    "largeStreet": Icon(
+      FontAwesomeIcons.road,
+      // color: Colors.green,
+      size: 30.0,
+    ),
+    "FullHouse": Icon(
+      FontAwesomeIcons.houseUser,
+      // color: Colors.green,
+      size: 30.0,
+    ),
+    "Kniffel": Icon(
+      FontAwesomeIcons.crown,
+      // color: Colors.green,
+      size: 30.0,
+    ),
+    "Chance": Icon(
+      FontAwesomeIcons.clover,
+      // color: Colors.green,
+      size: 30.0,
+    ),
   };
 
   String category = "";
@@ -77,12 +106,26 @@ class _DicePageState extends State<DicePage> {
     });
   }
 
+  String getButtonTitle() {
+    if (kniffel.rounds == 0 || kniffel.allDicesLocked) {
+      return "Done";
+    } else if (kniffel.gameFinished()) {
+      return "New Game";
+    } else {
+      return "Dice"; // (" + kniffel.rounds.toString() + ")";
+    }
+  }
+
   void kniffelNextRound(bool forceNextRound) {
     setState(() {
       // else {
       //   confettiController.play();
       // }
+
       this.selectedCategory = this.category;
+      if (kniffel.endNextRound) {
+        this.selectedCategory = "";
+      }
       kniffel.nextRound(this.category, forceNextRound);
       this.category = "";
     });
@@ -116,6 +159,7 @@ class _DicePageState extends State<DicePage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Expanded(
+              flex: 2,
               child:
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Expanded(
@@ -180,6 +224,7 @@ class _DicePageState extends State<DicePage> {
               ]),
             ),
             Expanded(
+              flex: 2,
               child: Row(
                 children: List.generate(5, (index) {
                   return Expanded(
@@ -278,11 +323,7 @@ class _DicePageState extends State<DicePage> {
                       cardChild: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          Icon(
-                            categories.values.elementAt(categoriesIndex),
-                            // color: Colors.green,
-                            size: 30.0,
-                          ),
+                          categories.values.elementAt(categoriesIndex),
                           Text(
                             !kniffel.checkAlreadyCompleted(
                                     categories.keys.elementAt(categoriesIndex))
@@ -303,14 +344,15 @@ class _DicePageState extends State<DicePage> {
                 }),
               ),
             ),
+
             BottomButton(
-                buttonTitle: (kniffel.rounds == 0 || kniffel.allDicesLocked)
-                    ? "Done"
-                    : "Dice (" + kniffel.rounds.toString() + ")",
-                onTap: () {
-                  kniffelNextRound(false);
-                },
-                disabled: disableButton()),
+              buttonTitle: getButtonTitle(),
+              onTap: () {
+                kniffelNextRound(false);
+              },
+              disabled: disableButton(),
+              rounds: kniffel.rounds,
+            ),
           ],
         ),
       ),

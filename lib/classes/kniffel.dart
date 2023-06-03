@@ -19,6 +19,7 @@ class Kniffel {
   int sum;
   int rounds;
   bool allDicesLocked;
+  bool endNextRound = false;
 
   Map smallStreet1 = {"1": 1, "2": 1, "3": 1, "4": 1, "5": 1, "6": 0};
   Map smallStreet2 = {"1": 0, "2": 1, "3": 1, "4": 1, "5": 1, "6": 1};
@@ -69,8 +70,8 @@ class Kniffel {
     bonus = 0;
     sum = 0;
     allDicesLocked = false;
-    rounds = 3;
-    this.nextRound("", false);
+    rounds = 2;
+    endNextRound = false;
   }
 
   // void printDice() {
@@ -90,14 +91,14 @@ class Kniffel {
   void nextRound(String category, bool forceNextRound) {
     print("function nextRound");
     this.confettiController.stop();
-    if (rounds > 0 && !forceNextRound && !this.checkAllDicesLocked()) {
+    if (this.endNextRound) {
+      this.startGame();
+    } else if (rounds > 0 && !forceNextRound && !this.checkAllDicesLocked()) {
       this.rounds--;
 
       this.rollDice();
       this.calculateResult(category);
     } else {
-      this.addResult(category);
-      print("end of rounds");
       if (this.gameFinished()) {
         print('should route to next ResultsPage');
         // Navigator.push(
@@ -113,9 +114,16 @@ class Kniffel {
         //   category = "";
         //   value = 0;
         // }
+        this.startGame();
+      } else {
+        this.addResult(category);
+        print("end of rounds");
       }
       this.resetRound();
       print("Rounds left: " + (this.rounds).toString());
+      if (this.gameFinished()) {
+        this.endNextRound = true;
+      }
     }
   }
 
