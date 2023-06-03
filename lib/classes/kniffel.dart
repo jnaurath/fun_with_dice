@@ -1,9 +1,13 @@
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'dice.dart';
 import 'dart:async';
 
 class Kniffel {
+  final confettiController = ConfettiController();
+  bool isConfettiPlaying = false;
+
   Kniffel() {
     startGame();
   }
@@ -19,6 +23,14 @@ class Kniffel {
   Map smallStreet1 = {"1": 1, "2": 1, "3": 1, "4": 1, "5": 1, "6": 0};
   Map smallStreet2 = {"1": 0, "2": 1, "3": 1, "4": 1, "5": 1, "6": 1};
   Map largeStreet = {"1": 1, "2": 1, "3": 1, "4": 1, "5": 1, "6": 1};
+
+  List<int> getAllDiceValues() {
+    List<int> results = [];
+    for (var dice in dices) {
+      results.add(int.parse(dice.getValue()));
+    }
+    return results;
+  }
 
   bool gameFinished() {
     print("funktion gameFinished");
@@ -77,16 +89,15 @@ class Kniffel {
 
   void nextRound(String category, bool forceNextRound) {
     print("function nextRound");
+    this.confettiController.stop();
     if (rounds > 0 && !forceNextRound && !this.checkAllDicesLocked()) {
       this.rounds--;
 
       this.rollDice();
-      // this.printDice();
       this.calculateResult(category);
     } else {
       this.addResult(category);
       print("end of rounds");
-      // this.calculateSum();
       if (this.gameFinished()) {
         print('should route to next ResultsPage');
         // Navigator.push(
@@ -106,7 +117,6 @@ class Kniffel {
       this.resetRound();
       print("Rounds left: " + (this.rounds).toString());
     }
-    // this.calculateSum();
   }
 
   void rollDice() {
@@ -132,7 +142,6 @@ class Kniffel {
   }
 
   int calculateResult(String category) {
-    print("function: calculateResult");
     int result = 0;
     switch (category) {
       case "1":
@@ -141,13 +150,11 @@ class Kniffel {
       case "4":
       case "5":
       case "6":
-        // print("category: " + category);
         for (var dice in this.dices) {
           if (dice.getValue() == category) {
             result += int.parse(category);
           }
         }
-        // print("result" + result.toString());
         break;
 
       case "3s":
@@ -167,7 +174,7 @@ class Kniffel {
         break;
 
       case "smallStreet":
-        if (checkForStreet() == "small") {
+        if (checkForStreet() == "small" || checkForStreet() == "large") {
           result = 30;
         } else {
           result = 0;
@@ -175,7 +182,7 @@ class Kniffel {
         break;
 
       case "largeStreet":
-        if (checkForStreet() == "small") {
+        if (checkForStreet() == "large") {
           result = 40;
         } else {
           result = 0;
@@ -193,6 +200,7 @@ class Kniffel {
       case "Kniffel":
         if (this.checkForSame(5)) {
           result = 50;
+          confettiController.play();
         } else {
           result = 0;
         }
@@ -205,7 +213,6 @@ class Kniffel {
         break;
       default:
     }
-    print("result: " + result.toString());
     return result;
   }
 
@@ -216,11 +223,6 @@ class Kniffel {
     for (var i = 1; i <= 6; i++) {
       if (kniffelResults[i.toString()] != null) {
         this.bonusDiff += kniffelResults[i.toString()] - (i) * 3;
-        // print(i.toString() +
-        //     ": " +
-        //     kniffelResults[i.toString()].toString() +
-        //     " --> " +
-        //     (kniffelResults[i.toString()] - (i) * 3).toString());
       } else {
         numbersCompleted = false;
       }
@@ -231,7 +233,6 @@ class Kniffel {
   }
 
   bool checkForSame(int value) {
-    // print("function: checkForSame " + value.toString());
     Map numbers = {"1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0};
     for (var dice in this.dices) {
       numbers[dice.getValue()]++;
@@ -246,53 +247,56 @@ class Kniffel {
   }
 
   bool checkForFullHouse() {
-    // print("function: checkForFullHouse");
     Map numbers = {"1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0};
     for (var dice in this.dices) {
       numbers[dice.getValue()]++;
     }
     if (numbers.values.any((value) => value == 3) &&
         numbers.values.any((value) => value == 2)) {
-      // print("true");
       return true;
     }
-    // print("false");
     return false;
   }
 
   String checkForStreet() {
-    // print("function: checkForStreet");
-    Map numbers = {"1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0};
-    for (var dice in this.dices) {
-      numbers[dice.getValue()]++;
+    List<int> diceValues = getAllDiceValues();
+    List<int> numbers = [0, 0, 0, 0, 0, 0];
+    for (var dice in diceValues) {
+      numbers[dice - 1]++;
     }
-    // print("results");
-    // print(numbers);
 
-    if (mapEquals(numbers, this.smallStreet1) ||
-        mapEquals(numbers, this.smallStreet1) ||
-        mapEquals(numbers, this.largeStreet)) {
-      print("small");
-      return "small";
+    int maxStreet = 0;
+    int tempStreet = 0;
+    for (var i = 0; i < 6; i++) {
+      if (numbers[i] > 0) {
+        tempStreet++;
+      } else {
+        if (maxStreet < tempStreet) {
+          maxStreet = tempStreet;
+        }
+        tempStreet = 0;
+      }
     }
-    if (mapEquals(numbers, this.largeStreet)) {
-      print("large");
+
+    if (maxStreet == 5 || tempStreet == 5) {
       return "large";
     }
-    print("false");
-    return "false";
+    if (maxStreet == 4 || tempStreet == 4) {
+      return "small";
+    } else {
+      return "false";
+    }
   }
 
   void calculateSum() {
-    print("function: calculateSum");
-    print("sum before" + this.sum.toString());
+    // print("function: calculateSum");
+    this.sum = 0;
     print(this.kniffelResults);
     for (var element in kniffelResults.values) {
       if (element != null) {
         this.sum += element;
       }
     }
-    print("sum after" + this.sum.toString());
   }
 
   bool checkAlreadyCompleted(String category) {
@@ -300,5 +304,12 @@ class Kniffel {
       return true;
     }
     return false;
+  }
+
+  int getResult(String category) {
+    if (this.kniffelResults[category] != null) {
+      return this.kniffelResults[category];
+    }
+    return 0;
   }
 }

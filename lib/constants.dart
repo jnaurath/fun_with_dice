@@ -5,6 +5,7 @@ const kActiveCardColor = Color(0xFF1D1E33);
 const kInactiveCardColor = Color(0xFF111328);
 const kCompletedCardColor = Color.fromARGB(255, 38, 89, 28);
 const kBottomContainerColor = Color.fromARGB(255, 93, 233, 51);
+const kBottomDisabledContainerColor = Color.fromARGB(255, 111, 142, 101);
 
 const lockedDiceColor = Color.fromARGB(255, 93, 233, 51);
 const unlockedDiceColor = Color.fromARGB(255, 157, 168, 154);
@@ -30,6 +31,11 @@ const kNumberTextStyle = TextStyle(
 );
 
 const kLargeButtonTextStyle = TextStyle(
+  fontSize: 25.0,
+  fontWeight: FontWeight.bold,
+);
+
+const kLargeButtonDisabledTextStyle = TextStyle(
   fontSize: 25.0,
   fontWeight: FontWeight.bold,
 );
