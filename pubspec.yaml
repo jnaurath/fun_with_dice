@@ -1,10 +1,12 @@
 name: fun_with_dice
 description: Nice dice apps
 
-version: 1.0.0
+publish_to: 'none'
+
+version: 0.1.0
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: '>=2.19.6 <3.0.0'
 
 dependencies:
   flutter:

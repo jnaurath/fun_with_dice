@@ -5,15 +5,15 @@ import 'package:fun_with_dice/constants.dart';
 
 class BottomButton extends StatelessWidget {
   BottomButton(
-      {@required this.onTap,
-      @required this.buttonTitle,
-      @required this.disabled,
-      @required this.rounds});
+      {this.onTap,
+      required this.buttonTitle,
+      this.disabled = false,
+      this.rounds});
 
-  final Function onTap;
+  final VoidCallback? onTap;
   final String buttonTitle;
   bool disabled;
-  int rounds;
+  int? rounds;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +40,7 @@ class BottomButton extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: List.generate(
-                rounds,
+                rounds ?? 0,
                 (index) => Container(
                   margin: EdgeInsets.fromLTRB(0, 5, 15, 0),
                   padding: EdgeInsets.all(5.0),

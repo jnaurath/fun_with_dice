@@ -14,11 +14,11 @@ class Kniffel {
 
   List<Dice> dices = [];
   Map kniffelResults = {};
-  int bonusDiff;
-  int bonus;
-  int sum;
-  int rounds;
-  bool allDicesLocked;
+  int bonusDiff = 0;
+  int bonus = 0;
+  int sum = 0;
+  int rounds = 2;
+  bool allDicesLocked = false;
   bool endNextRound = false;
 
   Map smallStreet1 = {"1": 1, "2": 1, "3": 1, "4": 1, "5": 1, "6": 0};
@@ -230,7 +230,7 @@ class Kniffel {
     bool numbersCompleted = true;
     for (var i = 1; i <= 6; i++) {
       if (kniffelResults[i.toString()] != null) {
-        this.bonusDiff += kniffelResults[i.toString()] - (i) * 3;
+        this.bonusDiff += int.parse(kniffelResults[i.toString()] - (i) * 3);
       } else {
         numbersCompleted = false;
       }
@@ -300,9 +300,9 @@ class Kniffel {
     // print("function: calculateSum");
     this.sum = 0;
     print(this.kniffelResults);
-    for (var element in kniffelResults.values) {
+    for (int element in kniffelResults.values) {
       if (element != null) {
-        this.sum += element;
+        this.sum += element!;
       }
     }
   }

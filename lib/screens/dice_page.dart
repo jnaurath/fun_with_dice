@@ -293,7 +293,7 @@ class _DicePageState extends State<DicePage> {
                         children: <Widget>[
                           Text((diceIndex + 1).toString(),
                               style: TextStyle(
-                                fontSize: 24.0,
+                                fontSize: 40.0,
                                 fontWeight: FontWeight.bold,
                                 color: colorPalette5,
                               )
