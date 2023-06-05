@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fun_with_dice/screens/dice_page.dart';
+import 'package:fun_with_dice/screens/home_page.dart';
 
 import 'constants.dart';
 
@@ -13,7 +14,8 @@ class FunWithDice extends StatelessWidget {
         primaryColor: colorPalette4,
         scaffoldBackgroundColor: colorPalette2,
       ),
-      home: DicePage(),
+      home: Homepage(),
+      // DicePage(),
     );
   }
 }

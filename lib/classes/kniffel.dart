@@ -66,12 +66,12 @@ class Kniffel {
       "Kniffel": null,
       "Chance": null,
     };
-    bonusDiff = 0;
-    bonus = 0;
-    sum = 0;
-    allDicesLocked = false;
-    rounds = 2;
-    endNextRound = false;
+    this.bonusDiff = 0;
+    this.bonus = 0;
+    this.sum = 0;
+    this.allDicesLocked = false;
+    this.rounds = 2;
+    this.endNextRound = false;
   }
 
   // void printDice() {
@@ -230,7 +230,7 @@ class Kniffel {
     bool numbersCompleted = true;
     for (var i = 1; i <= 6; i++) {
       if (kniffelResults[i.toString()] != null) {
-        this.bonusDiff += int.parse(kniffelResults[i.toString()] - (i) * 3);
+        this.bonusDiff += (kniffelResults[i.toString()] - (i) * 3) as int;
       } else {
         numbersCompleted = false;
       }
@@ -245,8 +245,8 @@ class Kniffel {
     for (var dice in this.dices) {
       numbers[dice.getValue()]++;
     }
-    for (var num in numbers.values) {
-      if (num >= value) {
+    for (var val in numbers.values) {
+      if (val >= value) {
         return true;
       }
     }
@@ -300,9 +300,9 @@ class Kniffel {
     // print("function: calculateSum");
     this.sum = 0;
     print(this.kniffelResults);
-    for (int element in kniffelResults.values) {
+    for (var element in kniffelResults.values) {
       if (element != null) {
-        this.sum += element!;
+        this.sum += element as int;
       }
     }
   }

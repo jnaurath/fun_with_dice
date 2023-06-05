@@ -19,7 +19,10 @@ class DicePage extends StatefulWidget {
 class _DicePageState extends State<DicePage> {
   @override
   void dispose() {
+    print("dispose");
     kniffel.confettiController.dispose();
+
+    super.dispose();
   }
 
   @override
